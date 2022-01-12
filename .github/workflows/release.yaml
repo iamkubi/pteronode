@@ -30,10 +30,18 @@ jobs:
         uses: JackMcKew/pyinstaller-action-linux@main
         with:
           path: .
+      - uses: actions/upload-artifact@v2
+        with:
+          name: pteronode-linux
+          path: dist/linux
       - name: PyInstaller Windows
         uses: JackMcKew/pyinstaller-action-windows@main
         with:
           path: .
+      - uses: actions/upload-artifact@v2
+        with:
+          name: pteronode-windows
+          path: dist/windows
       - uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
