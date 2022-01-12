@@ -39,5 +39,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           gzip: false
           files: >
-            /tmp/build/pteronode
-            /tmp\build\pteronode.exe
+            dist/pteronode
+            dist/pteronode.exe
