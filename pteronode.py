@@ -74,7 +74,6 @@ def list_nodes(api):
                          'Allocated Memory', 'Disk', 'Allocated Disk',
                          'Total Allocations', 'Used Allocations'])
 
-    x = 1
     for node in nodes:
         location = node['relationships']['location']['attributes']['short']
         allocs = node['relationships']['allocations']['data']
@@ -82,14 +81,11 @@ def list_nodes(api):
         used_allocs = len([a for a in allocs if a['attributes']['assigned']
                            == True])
 
-        # table.add_row([attrs['id'], attrs['name'], attrs['fqdn'],
-        table.add_row([node['id'], 'test{}'.format(x),
-                       'test{}.test.com'.format(x),
+        table.add_row([node['id'], node['name'], node['fqdn'],
                        location, node['memory'],
                        node['allocated_resources']['memory'],
                        node['disk'], node['allocated_resources'][
                            'disk'], total_allocs, used_allocs])
-        x += 1
     print(table)
     sys.exit(0)
 
