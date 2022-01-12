@@ -18,6 +18,7 @@ jobs:
       - name: Push __version__ update
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
+          branch: main
           commit_message: Bump version to ${RELEASE_VERSION}
           file_pattern: pteronode.py
 
