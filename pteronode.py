@@ -157,6 +157,8 @@ def add_allocations(api, nodes_str, ips_str, allocs_str, dry_run):
 
 
 def main(args):
+    if args.cacaw:
+        print(CACAW)
     try:
         with open(args.config) as f:
             config = yaml.load(f, yaml.Loader)
@@ -176,8 +178,6 @@ def main(args):
     if args.allocations:
         add_allocations(api, args.nodes, args.ip_addrs, args.allocations,
                         not args.no_dry_run)
-    if args.cacaw:
-        print(CACAW)
 
 
 if __name__ == '__main__':
