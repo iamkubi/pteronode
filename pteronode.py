@@ -5,7 +5,11 @@ import yaml
 from prettytable import PrettyTable
 from pydactyl import PterodactylClient
 
-parser = argparse.ArgumentParser(description='Process some integers.')
+__version__ = '1.0.0'
+
+parser = argparse.ArgumentParser(prog='PteroNode',
+                                 description='Manage your Pterodactyl '
+                                             'allocations with ease.')
 parser.add_argument('--cacaw', action='store_true', help='CACAW')
 parser.add_argument('--api_key',
                     help='Pterodactyl Application API key')
@@ -29,6 +33,8 @@ parser.add_argument('--ip_addrs', default=None,
                           'allocations.  Ports will only be added on IPs that '
                           'appear in this list.  If not specified ports will '
                           'be added to every IP on the node.'))
+parser.add_argument('--version', action='version',
+                    version='%(prog)s ' + __version__)
 
 args = parser.parse_args()
 
