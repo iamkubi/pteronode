@@ -37,6 +37,7 @@ jobs:
       - uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          gzip: false
           files: >
-            /tmp/pteronode/pteronode
-            /tmp\pteronode\pteronode.exe
+            /tmp/build/pteronode
+            /tmp\build\pteronode.exe
