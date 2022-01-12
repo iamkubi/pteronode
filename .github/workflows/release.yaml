@@ -47,5 +47,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           gzip: false
           files: >
-            dist/pteronode
-            dist/pteronode.exe
+            dist/linux/pteronode/pteronode
+            dist/windows/pteronode/pteronode.exe
