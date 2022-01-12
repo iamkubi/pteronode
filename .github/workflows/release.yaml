@@ -40,16 +40,9 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v2
-      - name: Create release
-        uses: Roang-zero1/github-create-release-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create GitHub release
-        uses: Roang-zero1/github-upload-release-artifacts-action@master
+      - uses: meeDamian/github-release@2.0
         with:
-          args:
-            - dist/linux/pteronode
-            - dist/windows/pteronode
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: >
+            dist/linux/pteronode
+            dist/windows/pteronode
