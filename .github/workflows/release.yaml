@@ -19,7 +19,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: main
-          commit_message: Bump version to ${RELEASE_VERSION}
+          commit_message: Bump version to ${GITHUB_REF#refs/*/}
           file_pattern: pteronode.py
 
   build-and-release:
