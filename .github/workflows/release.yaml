@@ -31,12 +31,13 @@ jobs:
           path: .
       - uses: JackMcKew/pyinstaller-action-windows@main
       - name: PyInstaller Windows
-          with:
-            path: .
+        with:
+          path: .
 
   release:
     runs-on: ubuntu-latest
     needs: [build]
+    steps:
       - uses: actions/checkout@v2
       - name: Create release
         uses: Roang-zero1/github-create-release-action@master
