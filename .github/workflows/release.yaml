@@ -31,10 +31,6 @@ jobs:
         with:
           path: .
           spec: linux_build.spec
-      - uses: actions/upload-artifact@v2
-        with:
-          name: pteronode-linux
-          path: dist
       - name: PyInstaller Windows
         uses: JackMcKew/pyinstaller-action-windows@main
         with:
@@ -49,5 +45,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           gzip: false
           files: >
-            dist/linux/pteronode/pteronode
-            dist/windows/pteronode/pteronode.exe
+            dist/linux/pteronode
+            dist/windows/pteronode.exe
