@@ -5,7 +5,7 @@ import yaml
 from prettytable import PrettyTable
 from pydactyl import PterodactylClient
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 parser = argparse.ArgumentParser(prog='PteroNode',
                                  description='Manage your Pterodactyl '
