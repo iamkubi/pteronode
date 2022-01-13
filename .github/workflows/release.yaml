@@ -27,6 +27,8 @@ jobs:
     needs: [update-version]
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: main
       - name: PyInstaller Linux
         uses: JackMcKew/pyinstaller-action-linux@main
         with:
