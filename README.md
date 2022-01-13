@@ -12,14 +12,31 @@ at https://discord.gg/q4AeCxgs.
 Right now you need to clone this repo and install the dependencies and run 
 it using Python.
 
+### From source
 ```shell
 git clone https://github.com/iamkubi/pteronode
 cd pteronode
 pip install -r requirements.txt
 python pteronode.py --help
 ```
-Sometime soon I'll add a packaged release that can be downloaded and run as a 
-single executable.
+
+### Pre-built
+Pre-built executables are available for Linux and Windows on the Release 
+pages.  You can use these without any dependencies.
+
+#### Linux
+```shell
+wget -q https://github.com/iamkubi/pteronode/releases/download/1.0.2/pteronode && chmod u+x ./pteronode
+./pteronode --version
+# PteroNode 1.0.2
+```
+
+#### Windows
+```shell
+Invoke-WebRequest -Uri https://github.com/iamkubi/pteronode/releases/download/1.0.2/pteronode.exe -OutFile pteronode.exe
+.\pteronode.exe --version
+# PteroNode 1.0.2
+```
 
 ## Credentials
 There are two ways to specify your panel credentials.  The easiest option is 
@@ -44,7 +61,7 @@ python pteronode.py --api_key 1234 --panel https://test.com --list_nodes
 This flag allows you to get a quick glance at all of the nodes on your panel.
 Especially useful for getting Node IDs to for when you want to add allocations.
 
-```shell
+```
 > python pteronode.py --list_nodes
 +----+-------+----------------+----------+--------+------------------+--------+----------------+-------------------+------------------+
 | ID |  Name |      FQDN      | Location | Memory | Allocated Memory |  Disk  | Allocated Disk | Total Allocations | Used Allocations |
@@ -60,7 +77,7 @@ Great, so I know my node IDs, now let's make some allocations.  By default
 it will create the same set of allocations on every IP on every node on your 
 panel.
 
-```shell
+```
 > python pteronode.py --allocations=7777-7800,25565-25665,27015
 PteroNode wants to add the following allocations:
 +---------+--------------+----------------+---------------------------------------+
@@ -76,7 +93,7 @@ By default, this didn't do anything, it just prints out a table showing you
 what it would create.  Run the same command again with `--no_dry_run` to 
 execute the above.
 
-```shell
+```
 > python pteronode.py --allocations=7777-7800,25565-25665,27015 --no_dry_run
 PteroNode wants to add the following allocations:
 +---------+--------------+----------------+---------------------------------------+
