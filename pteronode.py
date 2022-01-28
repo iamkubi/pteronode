@@ -96,23 +96,11 @@ def list_nodes(api):
 
 
 def list_ips(api):
-    nodes = get_nodes(api)
     table = PrettyTable(['Node ID', 'FQDN', 'IP Address', 'IP Alias',
                          'Total Allocations', 'Used Allocations'])
 
-    ips = {}
-    for node in nodes:
-        allocs = node['relationships']['allocations']['data']
-        for alloc in allocs:
-            ip = alloc['attributes']['ip']
-            alias = alloc['attributes']['alias']
-            if ip not in ips:
-                ips[ip] = {'node_id': node['id'], 'node_fqdn': node['fqdn'],
-                           'alias': alias, 'total_allocs': 0, 'used_allocs': 0}
-            if alloc['attributes']['assigned']:
-                ips[ip]['used_allocs'] += 1
-            ips[ip]['total_allocs'] += 1
-
+    nodes = get_nodes(api)
+    ips = map_ips_from_nodes(nodes)
     for ip, data in ips.items():
         table.add_row(
             [data['node_id'], data['node_fqdn'], ip, data['alias'],
@@ -133,10 +121,15 @@ def map_ips_from_nodes(all_nodes):
         node_ips = {}
         for alloc in node['relationships']['allocations']['data']:
             ip = alloc['attributes']['ip']
+            alias = alloc['attributes']['alias']
             if ip not in node_ips:
-                node_ips = {ip: alloc['attributes']['alias']}
-        for ip, alias in node_ips.items():
-            filtered_node_ips[ip] = {'node_id': node['id'], 'alias': alias}
+                node_ips[ip] = {'node_id': node['id'],
+                                'node_fqdn': node['fqdn'], 'alias': alias,
+                                'total_allocs': 0, 'used_allocs': 0}
+            if alloc['attributes']['assigned']:
+                node_ips[ip]['used_allocs'] += 1
+            node_ips[ip]['total_allocs'] += 1
+        filtered_node_ips.update(node_ips)
     return filtered_node_ips
 
 
@@ -165,10 +158,11 @@ def add_allocations(api, nodes_str, ips_str, allocs_str, dry_run):
         filtered_ips = [k for k, v in node_ips.items() if v['node_id'] in
                         filtered_node_ids]
 
-    table = PrettyTable(['Node ID', 'IP Address', 'IP Alias', 'Allocations'])
+    table = PrettyTable(
+        ['Node ID', 'Node FQDN', 'IP Address', 'IP Alias', 'Allocations'])
     for ip in filtered_ips:
-        table.add_row([node_ips[ip]['node_id'], ip, node_ips[ip]['alias'],
-                       allocs])
+        table.add_row([node_ips[ip]['node_id'], node_ips[ip]['node_fqdn'], ip,
+                       node_ips[ip]['alias'], allocs])
 
     if dry_run:
         print('PteroNode wants to add the following allocations:')
