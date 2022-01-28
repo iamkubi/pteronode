@@ -22,6 +22,8 @@ parser.add_argument('--no_dry_run', action='store_true',
                     help='Will not make any changes when set to False')
 parser.add_argument('--list_nodes', action='store_true',
                     help='Print a list of nodes and their IDs.')
+parser.add_argument('--list_ips', action='store_true',
+                    help='Print a list of IPs.')
 parser.add_argument('--nodes',
                     help='Comma separated list of Pterodactyl Node IDs to '
                          'create allocations on')
@@ -75,17 +77,46 @@ def list_nodes(api):
                          'Total Allocations', 'Used Allocations'])
 
     for node in nodes:
-        location = node['relationships']['location']['attributes']['short']
+        location = node['relationships']['location']
+        if location:
+            location = location['attributes']['short']
+        else:
+            print('No location data found.  Check your API key permissions.')
         allocs = node['relationships']['allocations']['data']
         total_allocs = len(allocs)
-        used_allocs = len([a for a in allocs if a['attributes']['assigned']
-                           == True])
+        used_allocs = len([a for a in allocs if a['attributes']['assigned']])
 
         table.add_row([node['id'], node['name'], node['fqdn'],
                        location, node['memory'],
                        node['allocated_resources']['memory'],
                        node['disk'], node['allocated_resources'][
                            'disk'], total_allocs, used_allocs])
+    print(table)
+    sys.exit(0)
+
+
+def list_ips(api):
+    nodes = get_nodes(api)
+    table = PrettyTable(['Node ID', 'FQDN', 'IP Address', 'IP Alias',
+                         'Total Allocations', 'Used Allocations'])
+
+    ips = {}
+    for node in nodes:
+        allocs = node['relationships']['allocations']['data']
+        for alloc in allocs:
+            ip = alloc['attributes']['ip']
+            alias = alloc['attributes']['alias']
+            if ip not in ips:
+                ips[ip] = {'node_id': node['id'], 'node_fqdn': node['fqdn'],
+                           'alias': alias, 'total_allocs': 0, 'used_allocs': 0}
+            if alloc['attributes']['assigned']:
+                ips[ip]['used_allocs'] += 1
+            ips[ip]['total_allocs'] += 1
+
+    for ip, data in ips.items():
+        table.add_row(
+            [data['node_id'], data['node_fqdn'], ip, data['alias'],
+             data['total_allocs'], data['used_allocs']])
     print(table)
     sys.exit(0)
 
@@ -171,6 +202,8 @@ def main(args):
 
     if args.list_nodes:
         list_nodes(api)
+    if args.list_ips:
+        list_ips(api)
     if args.allocations:
         add_allocations(api, args.nodes, args.ip_addrs, args.allocations,
                         not args.no_dry_run)
