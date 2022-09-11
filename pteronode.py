@@ -30,6 +30,8 @@ parser.add_argument('--nodes',
 parser.add_argument('--allocations',
                     help='List of allocation ranges to add to each node '
                          'listed e.g. \'7777-7800,9443,25565-25585\'')
+parser.add_argument('--action', choices=('add', 'delete'), default='add',
+                    help='Whether to add or delete the allocations')
 parser.add_argument('--ip_addrs', default=None,
                     help=('Comma separated list of IP addresses for the '
                           'allocations.  Ports will only be added on IPs that '
@@ -122,18 +124,24 @@ def map_ips_from_nodes(all_nodes):
         for alloc in node['relationships']['allocations']['data']:
             ip = alloc['attributes']['ip']
             alias = alloc['attributes']['alias']
+            port = alloc['attributes']['port']
+            alloc_id = alloc['attributes']['id']
+
             if ip not in node_ips:
                 node_ips[ip] = {'node_id': node['id'],
                                 'node_fqdn': node['fqdn'], 'alias': alias,
-                                'total_allocs': 0, 'used_allocs': 0}
+                                'total_allocs': 0, 'used_allocs': 0,
+                                'ports': {}}
+
             if alloc['attributes']['assigned']:
                 node_ips[ip]['used_allocs'] += 1
             node_ips[ip]['total_allocs'] += 1
+            node_ips[ip]['ports'][port] = alloc_id
         filtered_node_ips.update(node_ips)
     return filtered_node_ips
 
 
-def add_allocations(api, nodes_str, ips_str, allocs_str, dry_run):
+def modify_allocations(api, nodes_str, ips_str, allocs_str, action, dry_run):
     all_nodes = get_nodes(api)
     node_ips = map_ips_from_nodes(all_nodes)
     allocs = allocs_str.split(',')
@@ -165,15 +173,25 @@ def add_allocations(api, nodes_str, ips_str, allocs_str, dry_run):
                        node_ips[ip]['alias'], allocs])
 
     if dry_run:
-        print('PteroNode wants to add the following allocations:')
+        print('PteroNode wants to {} the following allocations:'.format(action))
         print(table)
         print('Run again with --no_dry_run to take this action.')
     else:
-        print('PteroNode is now adding the following allocations:')
+        print('PteroNode is now modifying the following allocations:')
         print(table)
-        for ip in filtered_ips:
-            api.nodes.create_allocations(
-                node_ips[ip]['node_id'], ip, allocs, node_ips[ip]['alias'])
+        if action == 'add':
+            for ip in filtered_ips:
+                api.nodes.create_allocations(
+                    node_ips[ip]['node_id'], ip, allocs, node_ips[ip]['alias'])
+        if action == 'delete':
+            print('Note: Deleting large number of allocations can cause rate '
+                  'limiting issues')
+            for ip in filtered_ips:
+                for port in allocs:
+                    alloc_id = node_ips[ip]['ports'][int(port)]
+                    api.nodes.delete_allocation(
+                        node_ips[ip]['node_id'], alloc_id)
+
         print('Done!  CACAW!')
 
 
@@ -199,8 +217,8 @@ def main(args):
     if args.list_ips:
         list_ips(api)
     if args.allocations:
-        add_allocations(api, args.nodes, args.ip_addrs, args.allocations,
-                        not args.no_dry_run)
+        modify_allocations(api, args.nodes, args.ip_addrs, args.allocations,
+                           args.action, not args.no_dry_run)
 
 
 if __name__ == '__main__':

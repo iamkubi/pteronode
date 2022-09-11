@@ -109,6 +109,16 @@ And that's it, it did it!  Specifying any allocations that already exist
 will not cause an error. Those ports will be ignored, and it will create any 
 ports from those ranges that do not exist.
 
+## Deleting Allocations
+
+This works similar to the way that adding allocations works, although 
+currently it only supports a comma separated list of ports and does not 
+support ranges.
+
+```shell
+python pteronode.py --allocations=27015,27016,27017,27018 --action=delete
+```
+
 ## Other flags
 There's some more stuff you can do with filters.  You can use `--nodes` to 
 specify a list of node IDs so that it will only add allocations on those nodes.
