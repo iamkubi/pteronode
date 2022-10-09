@@ -43,10 +43,11 @@ jobs:
         with:
           name: pteronode-windows
           path: dist
-      - uses: meeDamian/github-release@2.0
+      - uses: iamkubi/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           gzip: false
+          generate_release_notes: true
           files: >
             dist/linux/pteronode
             dist/windows/pteronode.exe
