@@ -10,7 +10,7 @@ jobs:
   update-version:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set RELEASE_VERSION
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Replace __version__
@@ -19,14 +19,14 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: main
-          commit_message: Bump version to ${GITHUB_REF#refs/*/}
+          commit_message: Bump version to ${RELEASE_VERSION}
           file_pattern: pteronode.py
 
   build-and-release:
     runs-on: ubuntu-latest
     needs: [update-version]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: main
       - name: PyInstaller Linux
@@ -39,7 +39,7 @@ jobs:
         with:
           path: .
           spec: windows_build.spec
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: pteronode-windows
           path: dist
